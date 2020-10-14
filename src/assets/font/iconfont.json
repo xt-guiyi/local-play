@@ -1,0 +1,23 @@
+{
+  "id": "2123510",
+  "name": "orderSystem",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "2012068",
+      "name": "分享",
+      "font_class": "fenxiang",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "5270852",
+      "name": "收 藏-产品详情",
+      "font_class": "shoucang",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    }
+  ]
+}
