@@ -42,10 +42,7 @@
                       </div>
                     </transition>
                     <div class="add-wrap">
-                      <i class="add iconfont icon-jiahao" @click="increate(foodItem.id, item.type)"></i>
-                      <transition name="half-court" @before-enter="beforeenter" @enter="enter" @after-enter="afterenter">
-                        <div class="small-red-sphere" v-if="(isShowHalfCourt)"></div>
-                      </transition>
+                      <i class="add iconfont icon-jiahao" @click="increate(foodItem.id, item.type, $event)"></i>
                     </div>
                   </div>
                 </div>
@@ -68,6 +65,7 @@
       <table-pane :active-key="2">2</table-pane>
     </table-change>
   </main>
+  <base-ball />
 </div>
 </template>
 
@@ -77,6 +75,7 @@ import TableChange from "components/table/TableChange.vue";
 import TablePane from "components/table/TablePane.vue";
 import BaseGoodsExhibition from "components/base/BaseGoodsExhibition.vue";
 import BaseDiscountedCard from "components/base/BaseDiscountedCard.vue";
+import BaseBall from "components/base/BaseBall.vue"
 import {
   throttle
 } from "utils/common.js"
@@ -105,7 +104,8 @@ export default {
     TableChange,
     TablePane,
     BaseGoodsExhibition,
-    BaseDiscountedCard
+    BaseDiscountedCard,
+    BaseBall
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -122,12 +122,11 @@ export default {
     let scrollTop = ref(0) //滚动位置
     const router = useRouter()
     const store = useStore()
-    const shopCart = computed(() => store.state.cart.shopCart)
-    const shopCartTotalPrice = computed(() => store.getters['cart/cartTotalPrice'])
-    const shopCartDefaultTotalPrice = computed(() => store.getters['cart/cartDefaultTotalPrice'])
+    const shopCart = computed(() => store.state.cart.shopCart) // 购物车
+    const shopCartTotalPrice = computed(() => store.getters['cart/cartTotalPrice']) // 折扣总价
+    const shopCartDefaultTotalPrice = computed(() => store.getters['cart/cartDefaultTotalPrice']) // 原价
     // 保存食物列表到vuex
     store.dispatch('cart/setFoodList', foodData)
-    console.log(store.state.cart.foodList)
     /**
      * 点击导航栏产生联动效果
      * @e clickEvent 单击事件对象
@@ -183,14 +182,25 @@ export default {
      * 添加食物到购物车
      * @id  食物id号
      */
-    const increate = function (id, type) {
+    const increate = function (id, type, event) {
       store.dispatch('cart/addToShopCart', {
         id,
         type,
         isAdd: true,
       })
-      isShowHalfCourt.value = !isShowHalfCourt.value
-      // console.log(store.state.cart.shopCart)
+
+      // 添加小球动画
+      for (let i = 0; i < store.state.ball.balls.length; i++) {
+        if (!store.state.ball.balls[i].show) {
+          store.commit("ball/changeShow", {
+            index: i,
+            isShow: true,
+            el: event.target
+          })
+          store.commit("ball/changeDropBall", store.state.ball.balls[i])
+          return
+        }
+      }
     }
 
     /**
@@ -203,22 +213,6 @@ export default {
         type,
         isAdd: false,
       })
-    }
-    const isShowHalfCourt = ref(false)
-    const beforeenter = function (el) {
-      console.log(el)
-      el.style.transform = "translate(0,0)";
-    }
-
-    const enter = function (el, don) {
-      el.offsetWidth;
-      el.style.transform = "translate(-30px,150px)";
-      el.style.transition = "transform 1s ease"
-      don();
-    }
-
-    const afterenter = function (el) {
-      isShowHalfCourt.value = !isShowHalfCourt.value
     }
     return {
       tableTitle,
@@ -238,10 +232,6 @@ export default {
       shopCartDefaultTotalPrice,
       increate,
       decreate,
-      beforeenter,
-      enter,
-      afterenter,
-      isShowHalfCourt
     };
   }
 };
@@ -333,9 +323,6 @@ export default {
 
           .number {
             flex: 4;
-            // position: absolute;
-            // left: calc(50% - 1.5rem);
-            // right: 50%;
           }
 
           .reduce {
@@ -343,7 +330,6 @@ export default {
             background-color: white;
             border-radius: 50%;
             border: 1px solid #ffce43;
-
           }
 
         }
@@ -352,20 +338,6 @@ export default {
           flex: 0 0 2rem;
           background-color: #ffce43;
           border-radius: 50%;
-          position: relative;
-
-          .small-red-sphere {
-            display: inline-block;
-            width: 1.5rem;
-            height: 1.5rem;
-            background-color: red;
-            border-radius: 50%;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: -1;
-          }
         }
 
       }
@@ -451,17 +423,6 @@ export default {
 .list-enter-from,
 .list-leave-to {
   transform: translate(30px);
-  // position: absolute;
-  // left: 0;
+
 }
-
-// .half-court-enter-from,
-// .half-court-leave-to {
-//   transform: translate(30px);
-// }
-
-// .half-court-enter-active,
-// .half-court-leave-active {
-//   translate: all 0.1 ease;
-// }
 </style>

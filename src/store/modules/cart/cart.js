@@ -48,9 +48,7 @@ mutations: {
   },
   // 添加食物数量
   SET_CART_QUANTITY({ shopCart }, {id, isAdd} ) {
-
     const cartItem = shopCart.get(id)
-    console.log(cartItem)
     if (isAdd) {
       cartItem.quantity++ 
     }else {
