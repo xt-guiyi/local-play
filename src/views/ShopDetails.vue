@@ -25,19 +25,43 @@
                   <div class="good-discount clearfix">
                     <base-discounted-card class="discount-style " v-if="foodItem.Discount? true : false" :isColumn="true">
                       <template v-slot:DiscountedPrice>
-                        {{ floatObj.multiply(foodItem.Discount, foodItem.price) }}
+                        {{ floatObj.multiply(foodItem.Discount, foodItem.price).toFixed(2)}}
                       </template>
                       <template v-slot:DiscountedRate>
-                        {{ floatObj.multiply(foodItem.Discount, 10) }}折
+                        {{ floatObj.multiply(foodItem.Discount, 10) }}
                       </template>
                     </base-discounted-card>
                   </div>
                 </div>
                 <div class="right">
-                  <i class="iconfont icon-jiahao"></i>
+                  <div class="add-center">
+                    <transition name="list">
+                      <div class="reduce-wrap" v-show="shopCart.get(foodItem.id)">
+                        <i class="reduce iconfont icon-jianhao" @click="decreate(foodItem.id, item.type)"></i>
+                        <div class="number">{{ {...shopCart.get(foodItem.id)}.quantity }}</div>
+                      </div>
+                    </transition>
+                    <div class="add-wrap">
+                      <i class="add iconfont icon-jiahao" @click="increate(foodItem.id, item.type)"></i>
+                      <transition name="half-court" @before-enter="beforeenter" @enter="enter" @after-enter="afterenter">
+                        <div class="small-red-sphere" v-if="(isShowHalfCourt)"></div>
+                      </transition>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
+          </div>
+          <div class="shoping-bar">
+            <div class="shop-basket iconfont icon-gouwuche1 " :class="[shopCartTotalPrice === 0 ? 'shop-change-style' : '']"></div>
+            <div class="shop-total">
+              <div class="total">
+                <div class="discount-price">￥{{ shopCartTotalPrice }}</div>
+                <div class="original-price">￥{{ shopCartDefaultTotalPrice }}</div>
+              </div>
+              <div class="introduce">3公里0元送 另需包赚费￥1</div>
+            </div>
+            <div class="go" :class="[shopCartTotalPrice === 0 ? 'shop-change-style' : '']">立即下单</div>
           </div>
         </div>
       </table-pane>
@@ -64,6 +88,7 @@ import {
   foodData
 } from "request/data.js";
 import {
+  computed,
   reactive,
   ref,
 } from "vue";
@@ -71,8 +96,8 @@ import {
   useRouter,
 } from 'vue-router'
 import {
-  nextTick
-} from 'process';
+  useStore
+} from "vuex"
 export default {
   name: 'ShopDetails',
   components: {
@@ -96,11 +121,17 @@ export default {
     let lastSelected = ref(0) // 上一次选择的导航栏
     let scrollTop = ref(0) //滚动位置
     const router = useRouter()
+    const store = useStore()
+    const shopCart = computed(() => store.state.cart.shopCart)
+    const shopCartTotalPrice = computed(() => store.getters['cart/cartTotalPrice'])
+    const shopCartDefaultTotalPrice = computed(() => store.getters['cart/cartDefaultTotalPrice'])
+    // 保存食物列表到vuex
+    store.dispatch('cart/setFoodList', foodData)
+    console.log(store.state.cart.foodList)
     /**
      * 点击导航栏产生联动效果
      * @e clickEvent 单击事件对象
      */
-
     const choiceGoodsType = function (e) {
       if (e.target.nodeName === 'LI') {
         lastSelected.value = e.target.dataset.number
@@ -109,9 +140,6 @@ export default {
         // 在使用显示比例缩放的系统上，scrollTop可能会提供一个小数。
         // 不要在电脑上缩放屏幕！！！！！
         orderingMainRef.value.scrollTop = orderingMainRef.value.children[lastSelected.value].offsetTop
-        console.log(orderingMainRef.value.scrollTop)
-        console.log(orderingMainRef.value.children[lastSelected.value].offsetTop)
-
       }
     };
 
@@ -121,7 +149,6 @@ export default {
      */
     let wtachScroll = function (e) {
       for (var i = 0; i < navRef.value.children.length; i++) {
-        console.log(orderingMainRef.value.children[i].offsetTop)
         if (e.target.scrollTop >= orderingMainRef.value.children[i].offsetTop) {
           lastSelected.value = i
         }
@@ -136,7 +163,6 @@ export default {
      * 跳转食物详情页
      * @foodData  食物数据
      */
-
     const jumpnewPage = function (data) {
       const isDiscount = data.Discount ? true : false
       const DiscountedRate = data.Discount ? floatObj.multiply(data.Discount, 10) : ''
@@ -147,13 +173,53 @@ export default {
         DiscountedRate: DiscountedRate,
         DiscountedPrice: DiscountedPrice
       }
-      console.log(isDiscount)
       window.sessionStorage.setItem('foodData', JSON.stringify(foodData))
       router.push({
         name: 'shopFoodDetails',
       })
     }
 
+    /**
+     * 添加食物到购物车
+     * @id  食物id号
+     */
+    const increate = function (id, type) {
+      store.dispatch('cart/addToShopCart', {
+        id,
+        type,
+        isAdd: true,
+      })
+      isShowHalfCourt.value = !isShowHalfCourt.value
+      // console.log(store.state.cart.shopCart)
+    }
+
+    /**
+     * 减少食物到购物车
+     * @id  食物id号
+     */
+    const decreate = function (id, type) {
+      store.dispatch('cart/addToShopCart', {
+        id,
+        type,
+        isAdd: false,
+      })
+    }
+    const isShowHalfCourt = ref(false)
+    const beforeenter = function (el) {
+      console.log(el)
+      el.style.transform = "translate(0,0)";
+    }
+
+    const enter = function (el, don) {
+      el.offsetWidth;
+      el.style.transform = "translate(-30px,150px)";
+      el.style.transition = "transform 1s ease"
+      don();
+    }
+
+    const afterenter = function (el) {
+      isShowHalfCourt.value = !isShowHalfCourt.value
+    }
     return {
       tableTitle,
       goodsType,
@@ -166,7 +232,16 @@ export default {
       foodData,
       jumpnewPage,
       scrollTop,
-      floatObj
+      floatObj,
+      shopCart,
+      shopCartTotalPrice,
+      shopCartDefaultTotalPrice,
+      increate,
+      decreate,
+      beforeenter,
+      enter,
+      afterenter,
+      isShowHalfCourt
     };
   }
 };
@@ -222,7 +297,7 @@ export default {
     border-bottom: 1px solid #eeeeee;
 
     .left {
-      flex: 7;
+      flex: 6.5;
 
       .good-discount {
         position: relative;
@@ -231,24 +306,162 @@ export default {
           width: 45%;
           height: 4rem;
           font-size: 1rem;
-          margin-top: 0.5rem;
+          margin-top: 1.5rem;
           float: right;
         }
       }
     }
 
     .right {
-      flex: 3;
-      text-align: center;
-      line-height: 20rem;
+      flex: 3.5;
+      display: flex;
+      align-items: center;
 
-      i {
-        font-size: 2rem;
-        padding: 0.5rem;
-        background-color: #ffce43;
-        border-radius: 50%;
+      .add-center {
+        flex: 0 0 80%;
+        height: 2rem;
+        line-height: 2rem;
+        margin: 0 auto;
+        position: relative;
+        text-align: center;
+        display: flex;
+        justify-content: flex-end;
+
+        .reduce-wrap {
+          flex: 6;
+          display: flex;
+
+          .number {
+            flex: 4;
+            // position: absolute;
+            // left: calc(50% - 1.5rem);
+            // right: 50%;
+          }
+
+          .reduce {
+            flex: 0 0 2rem;
+            background-color: white;
+            border-radius: 50%;
+            border: 1px solid #ffce43;
+
+          }
+
+        }
+
+        .add-wrap {
+          flex: 0 0 2rem;
+          background-color: #ffce43;
+          border-radius: 50%;
+          position: relative;
+
+          .small-red-sphere {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+          }
+        }
+
       }
+
     }
   }
 }
+
+.shoping-bar {
+  width: 90vw;
+  height: 5rem;
+  text-align: center;
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translate(-50%);
+  background-color: #373A43;
+  border-radius: 25px;
+  display: flex;
+
+  .shop-basket {
+    flex: 0 0 5rem;
+    line-height: 5rem;
+    font-size: 2.5rem;
+    font-weight: 900;
+    border-radius: 50%;
+    background-color: yellow;
+  }
+
+  .shop-change-style {
+    background-color: #CCCCCC !important;
+  }
+
+  .shop-total {
+    flex: 5;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    .total {
+      text-align: center;
+      display: flex;
+      align-items: center;
+
+      .discount-price {
+        color: red;
+        font-size: 1.8rem;
+        text-indent: 0.5rem;
+      }
+
+      .original-price {
+        color: white;
+        font-size: 1.2rem;
+        text-decoration: line-through;
+        text-indent: 0.5rem;
+      }
+    }
+
+    .introduce {
+      font-size: 0.8rem;
+      text-align: left;
+      text-indent: 0.5rem;
+
+    }
+  }
+
+  .go {
+    flex: 0 0 10rem;
+    line-height: 5rem;
+    font-size: 1.6rem;
+    font-weight: 900;
+    border-radius: 25px;
+    background-color: yellow;
+  }
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.1s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  transform: translate(30px);
+  // position: absolute;
+  // left: 0;
+}
+
+// .half-court-enter-from,
+// .half-court-leave-to {
+//   transform: translate(30px);
+// }
+
+// .half-court-enter-active,
+// .half-court-leave-active {
+//   translate: all 0.1 ease;
+// }
 </style>

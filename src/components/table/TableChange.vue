@@ -1,22 +1,19 @@
 <template>
-  <div id="table-container">
-    <div class="table-main" @click="tableChange">
-      <div
-        v-for="(item, index) of titleSouce"
-        :key="index"
-        class="table-items"
-        :class="[index === currentItem - 1 ? 'active-table' : '']"
-        :data-key="++index"
-      >
-        {{ item }}
-      </div>
+<div id="table-container">
+  <div class="table-main" @click="tableChange">
+    <div v-for="(item, index) of titleSouce" :key="index" class="table-items" :class="[index === currentItem - 1 ? 'active-table' : '']" :data-key="++index">
+      {{ item }}
     </div>
   </div>
-  <slot></slot>
+</div>
+<slot></slot>
 </template>
 
 <script>
-import { provide, ref } from "vue";
+import {
+  provide,
+  ref
+} from "vue";
 export default {
   name: "TableChange",
   props: {
@@ -34,10 +31,10 @@ export default {
   setup(props) {
     const currentItem = ref(props.defaultItem);
     // console.log(currentItem)
-    const tableChange = function(e) {
-      let keyValue = e.target.parentNode.dataset.key
-        ? e.target.parentNode.dataset.key
-        : e.target.dataset.key;
+    const tableChange = function (e) {
+      let keyValue = e.target.parentNode.dataset.key ?
+        e.target.parentNode.dataset.key :
+        e.target.dataset.key;
       currentItem.value = keyValue;
     };
     provide("currentItem", currentItem);

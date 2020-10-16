@@ -30,16 +30,16 @@ export default {
   display: flex;
 
   .goods-img {
-    width: 100px;
-    height: 100px;
-    line-height: 100px;
+    width: 10rem;
+    height: 10rem;
+    line-height: 10rem;
     text-align: center;
     background-color: grey;
     border-radius: 5%;
   }
 
   .goods-detailed {
-    text-indent: 10px;
+    text-indent: 1rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

@@ -9,7 +9,7 @@
   <div class="Discount-rate">
     <i class="iconfont icon-zhekou"></i>
     <p>
-      <slot name="DiscountedRate"></slot>
+      <slot name="DiscountedRate"></slot>折
     </p>
   </div>
 </div>
@@ -39,10 +39,10 @@ export default {
     width: 100%;
     flex: 6;
     display: flex;
+    align-content: center;
+    justify-content: center;
 
     p {
-      width: 100%;
-      height: 100%;
       flex: 5;
       text-align: center;
       border: 1px solid #F63E40;

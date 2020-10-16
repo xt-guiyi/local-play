@@ -14,7 +14,7 @@
             {{ floatObj.multiply(foodData.Discount, foodData.price) }}
           </template>
           <template v-slot:DiscountedRate>
-            {{ floatObj.multiply(foodData.Discount, 10) }}折
+            {{ floatObj.multiply(foodData.Discount, 10) }}
           </template>
         </base-discounted-card>
         <p class="already-sell">已售：{{ foodData.alreadySell }}</p>
@@ -55,12 +55,6 @@ export default {
     }
     // 食物数据
     const foodData = JSON.parse(sessionStorage.getItem('foodData'))
-    // // 是否有折扣
-    // const isDiscount = computed(() => foodData.Discount ? true : false)
-    // // 折扣率
-    // const DiscountedRate = computed(() => floatObj.multiply(foodData.Discount, 10))
-    // // 折扣价
-    // const DiscountedPrice = computed(() => floatObj.multiply(foodData.Discount, foodData.price))
     return {
       foodData,
       backPreviouPage,
