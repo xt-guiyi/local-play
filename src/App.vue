@@ -6,38 +6,25 @@
       </component>
     </keep-alive>
   </transition>
+  <cart-shoping-bar v-show="route.meta.isShowCartBall"></cart-shoping-bar>
+  <base-ball v-show="route.meta.isShowCartBall" />
 </router-view>
 </template>
 
 <script>
-import {
-  ref
-} from 'vue'
+import CartShopingBar from 'components/cart/CartShopingBar'
+import BaseBall from "components/base/BaseBall.vue"
 export default {
-  setup() {
-    return {
-
-    }
-  }
+  components: {
+    CartShopingBar,
+    BaseBall
+  },
 }
 </script>
 
 <style lang="scss">
-#app {}
-
 .animated {
   animation-duration: 0.5s;
   animation-fill-mode: both;
 }
-
-// .slide-left-enter-from,
-// .slide-left-leave-to {
-//   transform: translateX(-30px);
-//   opacity: 0;
-// }
-
-// .slide-left-enter-active,
-// .slide-left-leave-active {
-//   transition: all 1s ease-out;
-// }
 </style>

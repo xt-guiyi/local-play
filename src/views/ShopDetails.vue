@@ -11,6 +11,7 @@
             <li v-for="(item, index) of goodsType" :key="index" :data-number="index" :class="[lastSelected == index? 'active-bg-color' : '']">
               <i v-if="index === 0" class="iconfont icon-zhekou"></i>
               {{ item }}
+              <span v-show="foodClassify[item] !== 0" class="red-count-ball">{{ foodClassify[item] }}</span>
             </li>
           </ul>
           <!-- 食物列表-->
@@ -18,7 +19,7 @@
             <section v-for="(item, index) of foodData" :key="index">
               <h1>{{item.type}}</h1>
               <div class="good-item" v-for="(foodItem ,foodIndex) of item.data" :key="foodIndex">
-                <div class="left" @click="jumpnewPage(foodItem)">
+                <div class="left" @click="jumpnewPage({ type: item.type, ...foodItem })">
                   <div class="good-picture">
                     <base-goods-exhibition :goodsSouce="foodItem"></base-goods-exhibition>
                   </div>
@@ -34,38 +35,19 @@
                   </div>
                 </div>
                 <div class="right">
-                  <div class="add-center">
-                    <transition name="list">
-                      <div class="reduce-wrap" v-show="shopCart.get(foodItem.id)">
-                        <i class="reduce iconfont icon-jianhao" @click="decreate(foodItem.id, item.type)"></i>
-                        <div class="number">{{ {...shopCart.get(foodItem.id)}.quantity }}</div>
-                      </div>
-                    </transition>
-                    <div class="add-wrap">
-                      <i class="add iconfont icon-jiahao" @click="increate(foodItem.id, item.type, $event)"></i>
-                    </div>
+                  <div class="add-center-container">
+                    <cart-increase-and-decrease-button :foodId="foodItem.id" :foodType="item.type"></cart-increase-and-decrease-button>
                   </div>
                 </div>
               </div>
             </section>
           </div>
-          <div class="shoping-bar">
-            <div class="shop-basket iconfont icon-gouwuche1 " :class="[shopCartTotalPrice === 0 ? 'shop-change-style' : '']"></div>
-            <div class="shop-total">
-              <div class="total">
-                <div class="discount-price">￥{{ shopCartTotalPrice }}</div>
-                <div class="original-price">￥{{ shopCartDefaultTotalPrice }}</div>
-              </div>
-              <div class="introduce">3公里0元送 另需包赚费￥1</div>
-            </div>
-            <div class="go" :class="[shopCartTotalPrice === 0 ? 'shop-change-style' : '']">立即下单</div>
-          </div>
+
         </div>
       </table-pane>
       <table-pane :active-key="2">2</table-pane>
     </table-change>
   </main>
-  <base-ball />
 </div>
 </template>
 
@@ -75,7 +57,7 @@ import TableChange from "components/table/TableChange.vue";
 import TablePane from "components/table/TablePane.vue";
 import BaseGoodsExhibition from "components/base/BaseGoodsExhibition.vue";
 import BaseDiscountedCard from "components/base/BaseDiscountedCard.vue";
-import BaseBall from "components/base/BaseBall.vue"
+import CartIncreaseAndDecreaseButton from "components/cart/CartIncreaseAndDecreaseButton.vue";
 import {
   throttle
 } from "utils/common.js"
@@ -105,7 +87,7 @@ export default {
     TablePane,
     BaseGoodsExhibition,
     BaseDiscountedCard,
-    BaseBall
+    CartIncreaseAndDecreaseButton
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -119,14 +101,13 @@ export default {
     const orderingMainRef = ref(null) // 食物栏dom ref
     let navRef = ref(null) //  导航栏dom ref
     let lastSelected = ref(0) // 上一次选择的导航栏
-    let scrollTop = ref(0) //滚动位置
+    let scrollTop = ref(0) // 用于滚动位置
     const router = useRouter()
     const store = useStore()
-    const shopCart = computed(() => store.state.cart.shopCart) // 购物车
-    const shopCartTotalPrice = computed(() => store.getters['cart/cartTotalPrice']) // 折扣总价
-    const shopCartDefaultTotalPrice = computed(() => store.getters['cart/cartDefaultTotalPrice']) // 原价
+    const foodClassify = computed(() => store.getters['cart/foodClassifyNumber']) // 食物分类数量对象
     // 保存食物列表到vuex
     store.dispatch('cart/setFoodList', foodData)
+
     /**
      * 点击导航栏产生联动效果
      * @e clickEvent 单击事件对象
@@ -163,6 +144,7 @@ export default {
      * @foodData  食物数据
      */
     const jumpnewPage = function (data) {
+      // 计算折扣
       const isDiscount = data.Discount ? true : false
       const DiscountedRate = data.Discount ? floatObj.multiply(data.Discount, 10) : ''
       const DiscountedPrice = data.Discount ? floatObj.multiply(data.Discount, data.price) : ''
@@ -178,42 +160,6 @@ export default {
       })
     }
 
-    /**
-     * 添加食物到购物车
-     * @id  食物id号
-     */
-    const increate = function (id, type, event) {
-      store.dispatch('cart/addToShopCart', {
-        id,
-        type,
-        isAdd: true,
-      })
-
-      // 添加小球动画
-      for (let i = 0; i < store.state.ball.balls.length; i++) {
-        if (!store.state.ball.balls[i].show) {
-          store.commit("ball/changeShow", {
-            index: i,
-            isShow: true,
-            el: event.target
-          })
-          store.commit("ball/changeDropBall", store.state.ball.balls[i])
-          return
-        }
-      }
-    }
-
-    /**
-     * 减少食物到购物车
-     * @id  食物id号
-     */
-    const decreate = function (id, type) {
-      store.dispatch('cart/addToShopCart', {
-        id,
-        type,
-        isAdd: false,
-      })
-    }
     return {
       tableTitle,
       goodsType,
@@ -222,16 +168,11 @@ export default {
       navRef,
       choiceGoodsType,
       wtachScroll,
-      foodType,
       foodData,
       jumpnewPage,
       scrollTop,
       floatObj,
-      shopCart,
-      shopCartTotalPrice,
-      shopCartDefaultTotalPrice,
-      increate,
-      decreate,
+      foodClassify,
     };
   }
 };
@@ -245,11 +186,11 @@ export default {
   .ordering-nav {
     flex: 0 0 10rem;
     background-color: #f8f8f8;
-    height: 100%;
-    font-size: 1.6rem;
+    height: 100vh;
+    font-size: 1.4rem;
 
     li:nth-of-type(1) {
-      i {
+      i:first-of-type {
         color: #ffce43;
         margin-right: 0.8rem;
       }
@@ -259,6 +200,22 @@ export default {
       height: 4rem;
       line-height: 4rem;
       text-indent: 0.5rem;
+      position: relative;
+    }
+
+    .red-count-ball {
+      width: 1.5rem;
+      height: 1.5rem;
+      line-height: 1.5rem;
+      text-align: center;
+      text-indent: initial;
+      color: white;
+      font-size: 1rem;
+      background-color: red;
+      border-radius: 50%;
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
     }
   }
 }
@@ -307,122 +264,10 @@ export default {
       display: flex;
       align-items: center;
 
-      .add-center {
+      .add-center-container {
         flex: 0 0 80%;
-        height: 2rem;
-        line-height: 2rem;
-        margin: 0 auto;
-        position: relative;
-        text-align: center;
-        display: flex;
-        justify-content: flex-end;
-
-        .reduce-wrap {
-          flex: 6;
-          display: flex;
-
-          .number {
-            flex: 4;
-          }
-
-          .reduce {
-            flex: 0 0 2rem;
-            background-color: white;
-            border-radius: 50%;
-            border: 1px solid #ffce43;
-          }
-
-        }
-
-        .add-wrap {
-          flex: 0 0 2rem;
-          background-color: #ffce43;
-          border-radius: 50%;
-        }
-
-      }
-
-    }
-  }
-}
-
-.shoping-bar {
-  width: 90vw;
-  height: 5rem;
-  text-align: center;
-  position: fixed;
-  left: 50%;
-  bottom: 1rem;
-  transform: translate(-50%);
-  background-color: #373A43;
-  border-radius: 25px;
-  display: flex;
-
-  .shop-basket {
-    flex: 0 0 5rem;
-    line-height: 5rem;
-    font-size: 2.5rem;
-    font-weight: 900;
-    border-radius: 50%;
-    background-color: yellow;
-  }
-
-  .shop-change-style {
-    background-color: #CCCCCC !important;
-  }
-
-  .shop-total {
-    flex: 5;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-
-    .total {
-      text-align: center;
-      display: flex;
-      align-items: center;
-
-      .discount-price {
-        color: red;
-        font-size: 1.8rem;
-        text-indent: 0.5rem;
-      }
-
-      .original-price {
-        color: white;
-        font-size: 1.2rem;
-        text-decoration: line-through;
-        text-indent: 0.5rem;
       }
     }
-
-    .introduce {
-      font-size: 0.8rem;
-      text-align: left;
-      text-indent: 0.5rem;
-
-    }
   }
-
-  .go {
-    flex: 0 0 10rem;
-    line-height: 5rem;
-    font-size: 1.6rem;
-    font-weight: 900;
-    border-radius: 25px;
-    background-color: yellow;
-  }
-}
-
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.1s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  transform: translate(30px);
-
 }
 </style>

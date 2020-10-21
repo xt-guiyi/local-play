@@ -3,15 +3,18 @@ import { floatObj } from "utils/floatObj.js"
 export default {
 namespaced: true,
 state:{
-  shopCart: new Map(),
-  foodList: []
+  shopCart: new Map(), // 购物车
+  foodList: [] // 商店食物列表
 },
 
 getters: {
+  // 查找购物车对应的食物产品
   cartProducts(state) {
     let products = []
     for (const items of state.shopCart.values()) {
+      // 查找与购物车食品分类对应的食品列表数据
       const currentTypeFood =  state.foodList.find((foodItem)=> foodItem.type === items.type)
+      // 再查找与购物车食品id对应的食品数据
       let currentFoodInfo = currentTypeFood.data.find(foodItem=> foodItem.id === items.id)
       products.push({
         productInfo: currentFoodInfo,
@@ -20,24 +23,54 @@ getters: {
     } 
     return products
   },
+  // 计算购物车总价（含折扣价）
   cartTotalPrice(state,getters) {
-    // console.log(getters.cartProducts)
     return getters.cartProducts.reduce((total, items) => {
-      // console.log(items)
+      // 原价
       const originalTotal = floatObj.add(total, floatObj.multiply(items.productInfo.price, items.quantity))
+      // 如果有折扣则
       const discountToTal = items.productInfo.Discount?  floatObj.add(total, floatObj.multiply(floatObj.multiply(items.productInfo.price, items.productInfo.Discount), items.quantity))  : originalTotal
       return discountToTal.toFixed(2)
     }, 0)
   },
+  // 计算购物车总价（不含折扣）
   cartDefaultTotalPrice(state,getters) {
     return getters.cartProducts.reduce((total, items) => {
       const originalTotal = floatObj.add(total, floatObj.multiply(items.productInfo.price, items.quantity))
       return originalTotal.toFixed(2)
     }, 0)
+  },
+
+  // 食物分类
+  foodClassify(state) {
+      return state.foodList.map(item => item.type)
+  },
+
+  // 食物分类计数总量
+  foodClassifyNumber(state,getters) {
+    let  ClassifyNumber = { total: 0 } // 食物分类对象
+    let foodClassifyArray = getters.foodClassify // 食物类别数组
+    // 添加类别
+    foodClassifyArray.forEach(element => {
+      ClassifyNumber[element] =0  
+    });
+    // 遍历添加不同分类的数量
+    for (let index = 0; index < foodClassifyArray.length; index++) {
+      for (const iterator of state.shopCart.values()) {
+        if(foodClassifyArray[index] === iterator.type ) {
+          // 添加购物车中的数量到此
+          ClassifyNumber[foodClassifyArray[index]]  += iterator.quantity
+          // 添加总价
+          ClassifyNumber.total  += iterator.quantity
+        }
+      }
+    }
+    return ClassifyNumber
   }
 },
 
 mutations: {
+  // 提交商店食物列表
   SET_FOOD_LIst({ foodList }, payload) {
     foodList.push(...payload)
   },

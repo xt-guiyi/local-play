@@ -19,7 +19,6 @@ export default {
   setup() {
     const store = useStore()
     const balls = store.state.ball.balls
-    console.log(store.state.cart.shopCart)
     const beforeEnter = function (el) {
       let count = balls.length
       while (count--) {
@@ -81,7 +80,7 @@ export default {
     color: white;
 
     &.drop-enter-active {
-      transition: all 0.4s cubic-bezier(0.45, -0.15, 0.45, 0.41);
+      transition: all 0.4s cubic-bezier(0.45, -0.20, 0.45, 0.41);
     }
 
   }

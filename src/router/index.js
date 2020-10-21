@@ -6,11 +6,17 @@ const routes = [
     path: "/",
     name: "shopDetails",
     component: ShopDetails,
+    meta: {
+      isShowCartBall: true
+    }
   },
   {
     path: "/shopFoodDetails/",
     name: "shopFoodDetails",
-    component: ShopFoodDetails
+    component: ShopFoodDetails,
+    meta: {
+      isShowCartBall: true
+    }
   }
 ];
 

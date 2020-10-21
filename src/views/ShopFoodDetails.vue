@@ -20,7 +20,12 @@
         <p class="already-sell">已售：{{ foodData.alreadySell }}</p>
       </section>
       <div class="food-right">
-        <div class="add-shopping-cart"><i class="iconfont icon-jiahao"></i>加入购物车</div>
+        <div class="add-shopping-cart" v-show="!shopCart.get(foodData.id)" @click="addCart(foodData.id, foodData.type)">
+          <i class="iconfont icon-jiahao"></i>加入购物车
+        </div>
+        <div class="add-center-container" v-show="shopCart.get(foodData.id)">
+          <cart-increase-and-decrease-button :foodId="foodData.id" :foodType="foodData.type"></cart-increase-and-decrease-button>
+        </div>
       </div>
     </div>
   </main>
@@ -30,6 +35,8 @@
 <script>
 import TopCommonBar from "components/top/TopCommonBar.vue";
 import BaseDiscountedCard from "components/base/BaseDiscountedCard.vue";
+import CartIncreaseAndDecreaseButton from "components/cart/CartIncreaseAndDecreaseButton.vue";
+
 import {
   floatObj
 } from "utils/floatObj.js";
@@ -39,25 +46,38 @@ import {
 import {
   computed
 } from 'vue';
-
+import {
+  useStore
+} from "vuex"
 export default {
   name: 'ShopFoodDetails',
   components: {
     TopCommonBar,
-    BaseDiscountedCard
+    BaseDiscountedCard,
+    CartIncreaseAndDecreaseButton
   },
   setup(props) {
     const router = useRouter()
-
+    const store = useStore()
+    const shopCart = computed(() => store.state.cart.shopCart) // 购物车
+    // 食物数据
+    const foodData = JSON.parse(sessionStorage.getItem('foodData'))
     // 触发返回事件
     const backPreviouPage = function () {
       router.go(-1)
     }
-    // 食物数据
-    const foodData = JSON.parse(sessionStorage.getItem('foodData'))
+    const addCart = function (id, type) {
+      store.dispatch('cart/addToShopCart', {
+        id,
+        type,
+        isAdd: true,
+      })
+    }
     return {
+      shopCart,
       foodData,
       backPreviouPage,
+      addCart,
       floatObj
     }
   }
@@ -155,7 +175,14 @@ export default {
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
+    }
 
+    .add-center-container {
+      width: 50%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
     }
   }
 }
