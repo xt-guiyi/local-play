@@ -1,21 +1,24 @@
 <template>
-<div id="table-container">
-  <div class="table-main" @click="tableChange">
-    <div v-for="(item, index) of titleSouce" :key="index" class="table-items" :class="[index === currentItem - 1 ? 'active-table' : '']" :data-key="++index">
-      {{ item }}
+  <div id="table-container">
+    <div class="table-main" @click="tableChange">
+      <div
+        v-for="(item, index) of titleSouce"
+        :key="index"
+        class="table-items"
+        :class="[index === currentItem - 1 ? 'active-table' : '']"
+        :data-key="++index"
+      >
+        {{ item }}
+      </div>
     </div>
   </div>
-</div>
-<slot></slot>
+  <slot></slot>
 </template>
 
 <script>
-import {
-  provide,
-  ref
-} from "vue";
+import { provide, ref } from 'vue'
 export default {
-  name: "TableChange",
+  name: 'TableChange',
   props: {
     // 数据源
     titleSouce: {
@@ -29,21 +32,21 @@ export default {
     }
   },
   setup(props) {
-    const currentItem = ref(props.defaultItem);
+    const currentItem = ref(props.defaultItem)
     // console.log(currentItem)
-    const tableChange = function (e) {
-      let keyValue = e.target.parentNode.dataset.key ?
-        e.target.parentNode.dataset.key :
-        e.target.dataset.key;
-      currentItem.value = keyValue;
-    };
-    provide("currentItem", currentItem);
+    const tableChange = function(e) {
+      let keyValue = e.target.parentNode.dataset.key
+        ? e.target.parentNode.dataset.key
+        : e.target.dataset.key
+      currentItem.value = keyValue
+    }
+    provide('currentItem', currentItem)
     return {
       currentItem,
       tableChange
-    };
+    }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -76,7 +79,7 @@ export default {
   font-size: 1.6rem;
 
   &::after {
-    content: "";
+    content: '';
     background-color: #ffce43;
     height: 4px;
     width: 100%;

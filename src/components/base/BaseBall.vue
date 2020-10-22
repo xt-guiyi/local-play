@@ -1,25 +1,28 @@
 <template>
-<div class="ball-container">
-  <transition v-for="(ball,index) in balls" :key="index" name="drop" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
-    <div class="ball" v-show="ball.show">
-      1
-    </div>
-  </transition>
-</div>
+  <div class="ball-container">
+    <transition
+      v-for="(ball, index) in balls"
+      :key="index"
+      name="drop"
+      @before-enter="beforeEnter"
+      @enter="enter"
+      @after-enter="afterEnter"
+    >
+      <div v-show="ball.show" class="ball">
+        1
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script>
-import {
-  nextTick
-} from "vue"
-import {
-  useStore
-} from "vuex"
+import { nextTick } from 'vue'
+import { useStore } from 'vuex'
 export default {
   setup() {
     const store = useStore()
     const balls = store.state.ball.balls
-    const beforeEnter = function (el) {
+    const beforeEnter = function(el) {
       let count = balls.length
       while (count--) {
         let ball = balls[count]
@@ -36,7 +39,7 @@ export default {
         }
       }
     }
-    const enter = function (el) {
+    const enter = function(el) {
       // 触发浏览器重绘
       /* eslint-disable no-unused-vars */
       let rf = el.offsetHeight
@@ -45,7 +48,7 @@ export default {
         el.style.transform = 'translate3d(0, 0, 0)'
       })
     }
-    const afterEnter = function (el) {
+    const afterEnter = function(el) {
       // 删除数组第一个元素, 并返回第一个元素,因对象都是指向地址,所以操作dropBall数组也就操作了balls数组
       let ball = store.state.ball.dropBall.shift()
       if (ball) {
@@ -65,7 +68,6 @@ export default {
 
 <style lang="scss" scoped>
 .ball-container {
-
   .ball {
     position: fixed;
     left: 3.5rem;
@@ -80,9 +82,8 @@ export default {
     color: white;
 
     &.drop-enter-active {
-      transition: all 0.4s cubic-bezier(0.45, -0.20, 0.45, 0.41);
+      transition: all 0.4s cubic-bezier(0.45, -0.2, 0.45, 0.41);
     }
-
   }
 }
 </style>

@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import { inject, ref, watchEffect } from "vue";
+import { inject, ref, watchEffect } from 'vue'
 export default {
-  name: "TablePane",
+  name: 'TablePane',
   props: {
     activeKey: {
       type: Number,
@@ -15,20 +15,20 @@ export default {
     }
   },
   setup(props) {
-    const show = ref(false);
-    const selectionitem = inject("currentItem");
+    const show = ref(false)
+    const selectionitem = inject('currentItem')
     watchEffect(() => {
       if (selectionitem.value == props.activeKey) {
         // console.log('好了')
-        show.value = true;
+        show.value = true
       } else {
-        show.value = false;
+        show.value = false
       }
-    });
+    })
 
     return {
       show
-    };
+    }
   }
-};
+}
 </script>

@@ -9,7 +9,7 @@ export const floatObj = (function() {
    * 判断obj是否为一个整数
    */
   function isInteger(obj) {
-    return Math.floor(obj) === obj;
+    return Math.floor(obj) === obj
   }
 
   /*
@@ -19,19 +19,19 @@ export const floatObj = (function() {
    *   {times:100, num: 314}
    */
   function toInteger(floatNum) {
-    var ret = { times: 1, num: 0 };
+    var ret = { times: 1, num: 0 }
     if (isInteger(floatNum)) {
-      ret.num = floatNum;
-      return ret;
+      ret.num = floatNum
+      return ret
     }
-    var strfi = floatNum + "";
-    var dotPos = strfi.indexOf(".");
-    var len = strfi.substr(dotPos + 1).length;
-    var times = Math.pow(10, len);
-    var intNum = Number(floatNum.toString().replace(".", ""));
-    ret.times = times;
-    ret.num = intNum;
-    return ret;
+    var strfi = floatNum + ''
+    var dotPos = strfi.indexOf('.')
+    var len = strfi.substr(dotPos + 1).length
+    var times = Math.pow(10, len)
+    var intNum = Number(floatNum.toString().replace('.', ''))
+    ret.times = times
+    ret.num = intNum
+    return ret
   }
 
   /*
@@ -45,57 +45,57 @@ export const floatObj = (function() {
    *
    */
   function operation(a, b, op) {
-    var o1 = toInteger(a);
-    var o2 = toInteger(b);
-    var n1 = o1.num;
-    var n2 = o2.num;
-    var t1 = o1.times;
-    var t2 = o2.times;
-    var max = t1 > t2 ? t1 : t2;
-    var result = null;
+    var o1 = toInteger(a)
+    var o2 = toInteger(b)
+    var n1 = o1.num
+    var n2 = o2.num
+    var t1 = o1.times
+    var t2 = o2.times
+    var max = t1 > t2 ? t1 : t2
+    var result = null
     switch (op) {
-      case "add":
+      case 'add':
         if (t1 === t2) {
           // 两个小数位数相同
-          result = n1 + n2;
+          result = n1 + n2
         } else if (t1 > t2) {
           // o1 小数位 大于 o2
-          result = n1 + n2 * (t1 / t2);
+          result = n1 + n2 * (t1 / t2)
         } else {
           // o1 小数位 小于 o2
-          result = n1 * (t2 / t1) + n2;
+          result = n1 * (t2 / t1) + n2
         }
-        return result / max;
-      case "subtract":
+        return result / max
+      case 'subtract':
         if (t1 === t2) {
-          result = n1 - n2;
+          result = n1 - n2
         } else if (t1 > t2) {
-          result = n1 - n2 * (t1 / t2);
+          result = n1 - n2 * (t1 / t2)
         } else {
-          result = n1 * (t2 / t1) - n2;
+          result = n1 * (t2 / t1) - n2
         }
-        return result / max;
-      case "multiply":
-        result = (n1 * n2) / (t1 * t2);
-        return result;
-      case "divide":
-        result = (n1 / n2) * (t2 / t1);
-        return result;
+        return result / max
+      case 'multiply':
+        result = (n1 * n2) / (t1 * t2)
+        return result
+      case 'divide':
+        result = (n1 / n2) * (t2 / t1)
+        return result
     }
   }
 
   // 加减乘除的四个接口
   function add(a, b) {
-    return operation(a, b, "add");
+    return operation(a, b, 'add')
   }
   function subtract(a, b) {
-    return operation(a, b, "subtract");
+    return operation(a, b, 'subtract')
   }
   function multiply(a, b) {
-    return operation(a, b, "multiply");
+    return operation(a, b, 'multiply')
   }
   function divide(a, b) {
-    return operation(a, b, "divide");
+    return operation(a, b, 'divide')
   }
 
   // exports
@@ -104,5 +104,5 @@ export const floatObj = (function() {
     subtract: subtract,
     multiply: multiply,
     divide: divide
-  };
-})();
+  }
+})()

@@ -1,54 +1,56 @@
 <template>
-<div>
-  <top-common-bar title="商品详情" @back-event="backPreviouPage"></top-common-bar>
-  <main>
-    <div class="food-img">
-      <img src="" alt="">
-    </div>
-    <div class="food-details">
-      <section class="food-left">
-        <h5>{{ foodData.foodName }}</h5>
-        <p class="food-price">￥{{ foodData.price }}</p>
-        <base-discounted-card v-if="foodData.isDiscount">
-          <template v-slot:DiscountedPrice>
-            {{ floatObj.multiply(foodData.Discount, foodData.price) }}
-          </template>
-          <template v-slot:DiscountedRate>
-            {{ floatObj.multiply(foodData.Discount, 10) }}
-          </template>
-        </base-discounted-card>
-        <p class="already-sell">已售：{{ foodData.alreadySell }}</p>
-      </section>
-      <div class="food-right">
-        <div class="add-shopping-cart" v-show="!shopCart.get(foodData.id)" @click="addCart(foodData.id, foodData.type)">
-          <i class="iconfont icon-jiahao"></i>加入购物车
-        </div>
-        <div class="add-center-container" v-show="shopCart.get(foodData.id)">
-          <cart-increase-and-decrease-button :foodId="foodData.id" :foodType="foodData.type"></cart-increase-and-decrease-button>
+  <div>
+    <top-common-bar
+      title="商品详情"
+      @back-event="backPreviouPage"
+    ></top-common-bar>
+    <main>
+      <div class="food-img">
+        <img src="" alt="" />
+      </div>
+      <div class="food-details">
+        <section class="food-left">
+          <h5>{{ foodData.foodName }}</h5>
+          <p class="food-price">￥{{ foodData.price }}</p>
+          <base-discounted-card v-if="foodData.isDiscount">
+            <template v-slot:DiscountedPrice>
+              {{ floatObj.multiply(foodData.Discount, foodData.price) }}
+            </template>
+            <template v-slot:DiscountedRate>
+              {{ floatObj.multiply(foodData.Discount, 10) }}
+            </template>
+          </base-discounted-card>
+          <p class="already-sell">已售：{{ foodData.alreadySell }}</p>
+        </section>
+        <div class="food-right">
+          <div
+            class="add-shopping-cart"
+            v-show="!shopCart.get(foodData.id)"
+            @click="addCart(foodData.id, foodData.type)"
+          >
+            <i class="iconfont icon-jiahao"></i>加入购物车
+          </div>
+          <div class="add-center-container" v-show="shopCart.get(foodData.id)">
+            <cart-increase-and-decrease-button
+              :foodId="foodData.id"
+              :foodType="foodData.type"
+            ></cart-increase-and-decrease-button>
+          </div>
         </div>
       </div>
-    </div>
-  </main>
-</div>
+    </main>
+  </div>
 </template>
 
 <script>
-import TopCommonBar from "components/top/TopCommonBar.vue";
-import BaseDiscountedCard from "components/base/BaseDiscountedCard.vue";
-import CartIncreaseAndDecreaseButton from "components/cart/CartIncreaseAndDecreaseButton.vue";
+import TopCommonBar from 'components/top/TopCommonBar.vue'
+import BaseDiscountedCard from 'components/base/BaseDiscountedCard.vue'
+import CartIncreaseAndDecreaseButton from 'components/cart/CartIncreaseAndDecreaseButton.vue'
 
-import {
-  floatObj
-} from "utils/floatObj.js";
-import {
-  useRouter,
-} from 'vue-router'
-import {
-  computed
-} from 'vue';
-import {
-  useStore
-} from "vuex"
+import { floatObj } from 'utils/floatObj.js'
+import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 export default {
   name: 'ShopFoodDetails',
   components: {
@@ -56,21 +58,21 @@ export default {
     BaseDiscountedCard,
     CartIncreaseAndDecreaseButton
   },
-  setup(props) {
+  setup() {
     const router = useRouter()
     const store = useStore()
     const shopCart = computed(() => store.state.cart.shopCart) // 购物车
     // 食物数据
     const foodData = JSON.parse(sessionStorage.getItem('foodData'))
     // 触发返回事件
-    const backPreviouPage = function () {
+    const backPreviouPage = function() {
       router.go(-1)
     }
-    const addCart = function (id, type) {
+    const addCart = function(id, type) {
       store.dispatch('cart/addToShopCart', {
         id,
         type,
-        isAdd: true,
+        isAdd: true
       })
     }
     return {
@@ -114,7 +116,7 @@ export default {
       height: 2.5rem;
       line-height: 2.5rem;
       box-sizing: content-box;
-      color: #F63E40;
+      color: #f63e40;
 
       .Discounted-price {
         flex: 6;
@@ -123,21 +125,18 @@ export default {
         p {
           flex: 5;
           text-align: center;
-          border: 1px solid #F63E40;
-          color: #F63E40;
-
+          border: 1px solid #f63e40;
+          color: #f63e40;
         }
 
         p:first-child {
-          background-color: #F63E40;
+          background-color: #f63e40;
           color: white;
           border-radius: 0.5rem 0 0 0.5rem;
-
         }
 
         p:last-child {
           border-radius: 0 0.5rem 0.5rem 0;
-
         }
       }
 
@@ -169,7 +168,7 @@ export default {
       height: 3rem;
       line-height: 3rem;
       text-align: center;
-      background-color: #FEC81E;
+      background-color: #fec81e;
       border-radius: 25px;
       position: absolute;
       left: 50%;

@@ -7,7 +7,7 @@ export default {
       { show: false },
       { show: false },
       { show: false },
-      { show: false },
+      { show: false }
     ],
     dropBall: []
   },

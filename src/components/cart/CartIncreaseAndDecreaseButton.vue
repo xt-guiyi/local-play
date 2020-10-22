@@ -1,24 +1,26 @@
 <template>
-<div class="add-center">
-  <transition name="list">
-    <div class="reduce-wrap" v-show="shopCart.get(foodId)">
-      <i class="reduce iconfont icon-jianhao" @click="decreate(foodId, foodType)"></i>
-      <div class="number">{{ {...shopCart.get(foodId)}.quantity }}</div>
+  <div class="add-center">
+    <transition name="list">
+      <div v-show="shopCart.get(foodId)" class="reduce-wrap">
+        <i
+          class="reduce iconfont icon-jianhao"
+          @click="decreate(foodId, foodType)"
+        ></i>
+        <div class="number">{{ { ...shopCart.get(foodId) }.quantity }}</div>
+      </div>
+    </transition>
+    <div class="add-wrap">
+      <i
+        class="add iconfont icon-jiahao"
+        @click="increate(foodId, foodType, $event)"
+      ></i>
     </div>
-  </transition>
-  <div class="add-wrap">
-    <i class="add iconfont icon-jiahao" @click="increate(foodId, foodType, $event)"></i>
   </div>
-</div>
 </template>
 
 <script>
-import {
-  computed
-} from 'vue'
-import {
-  useStore
-} from "vuex"
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 export default {
   name: 'CartIncreaseAndDecreaseButton',
   props: {
@@ -33,29 +35,29 @@ export default {
       required: true
     }
   },
-  setup(props) {
+  setup() {
     const store = useStore()
     const shopCart = computed(() => store.state.cart.shopCart) // 购物车
     /**
      * 添加食物到购物车
      * @id  食物id号
      */
-    const increate = function (id, type, event) {
+    const increate = function(id, type, event) {
       store.dispatch('cart/addToShopCart', {
         id,
         type,
-        isAdd: true,
+        isAdd: true
       })
 
       // 添加小球动画
       for (let i = 0; i < store.state.ball.balls.length; i++) {
         if (!store.state.ball.balls[i].show) {
-          store.commit("ball/changeShow", {
+          store.commit('ball/changeShow', {
             index: i,
             isShow: true,
             el: event.target
           })
-          store.commit("ball/changeDropBall", store.state.ball.balls[i])
+          store.commit('ball/changeDropBall', store.state.ball.balls[i])
           return
         }
       }
@@ -65,11 +67,11 @@ export default {
      * 减少食物到购物车
      * @id  食物id号
      */
-    const decreate = function (id, type) {
+    const decreate = function(id, type) {
       store.dispatch('cart/addToShopCart', {
         id,
         type,
-        isAdd: false,
+        isAdd: false
       })
     }
     return {
@@ -78,7 +80,6 @@ export default {
       decreate
     }
   }
-
 }
 </script>
 
@@ -107,7 +108,6 @@ export default {
       border-radius: 50%;
       border: 1px solid #ffce43;
     }
-
   }
 
   .add-wrap {
@@ -115,7 +115,6 @@ export default {
     background-color: #ffce43;
     border-radius: 50%;
   }
-
 }
 
 .list-enter-active,
@@ -126,6 +125,5 @@ export default {
 .list-enter-from,
 .list-leave-to {
   transform: translate(30px);
-
 }
 </style>

@@ -1,33 +1,47 @@
 <template>
-<div class="shoping-bar">
-  <div class="shop-basket iconfont icon-gouwuche1 " :class="[shopCartTotalPrice === 0 ? 'shop-change-style' : '']">
-    <span v-show="foodClassify.total !== 0" class="red-total-ball">{{ foodClassify.total }}</span>
-  </div>
-  <div class="shop-total">
-    <div class="total">
-      <div class="discount-price">￥{{ shopCartTotalPrice }}</div>
-      <div class="original-price" v-show="shopCartDefaultTotalPrice">￥{{ shopCartDefaultTotalPrice }}</div>
+  <div class="shoping-bar">
+    <div
+      class="shop-basket iconfont icon-gouwuche1 "
+      :class="[shopCartTotalPrice === 0 ? 'shop-change-style' : '']"
+    >
+      <span v-show="foodClassify.total !== 0" class="red-total-ball">
+        {{ foodClassify.total }}
+      </span>
     </div>
-    <div class="introduce">3公里0元送 另需包赚费￥1</div>
+    <div class="shop-total">
+      <div class="total">
+        <div class="discount-price">￥{{ shopCartTotalPrice }}</div>
+        <div v-show="shopCartDefaultTotalPrice" class="original-price">
+          ￥{{ shopCartDefaultTotalPrice }}
+        </div>
+      </div>
+      <div class="introduce">3公里0元送 另需包赚费￥1</div>
+    </div>
+    <div
+      class="go"
+      :class="[shopCartTotalPrice === 0 ? 'shop-change-style' : '']"
+    >
+      立即下单
+    </div>
   </div>
-  <div class="go" :class="[shopCartTotalPrice === 0 ? 'shop-change-style' : '']">立即下单</div>
-</div>
 </template>
 
 <script>
-import {
-  computed
-} from "vue"
-import {
-  useStore
-} from 'vuex'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 export default {
   name: 'CartShopingBar',
-  setup(props) {
+  setup() {
     const store = useStore()
-    const foodClassify = computed(() => store.getters['cart/foodClassifyNumber']) // 食物分类数量对象
-    const shopCartTotalPrice = computed(() => store.getters['cart/cartTotalPrice']) // 折扣总价
-    const shopCartDefaultTotalPrice = computed(() => store.getters['cart/cartDefaultTotalPrice']) // 原价
+    const foodClassify = computed(
+      () => store.getters['cart/foodClassifyNumber']
+    ) // 食物分类数量对象
+    const shopCartTotalPrice = computed(
+      () => store.getters['cart/cartTotalPrice']
+    ) // 折扣总价
+    const shopCartDefaultTotalPrice = computed(
+      () => store.getters['cart/cartDefaultTotalPrice']
+    ) // 原价
     return {
       foodClassify,
       shopCartTotalPrice,
@@ -46,7 +60,7 @@ export default {
   left: 50%;
   bottom: 1rem;
   transform: translate(-50%);
-  background-color: #373A43;
+  background-color: #373a43;
   border-radius: 25px;
   display: flex;
 
@@ -74,7 +88,7 @@ export default {
   }
 
   .shop-change-style {
-    background-color: #CCCCCC !important;
+    background-color: #cccccc !important;
   }
 
   .shop-total {
@@ -107,7 +121,6 @@ export default {
       font-size: 0.8rem;
       text-align: left;
       text-indent: 0.5rem;
-
     }
   }
 

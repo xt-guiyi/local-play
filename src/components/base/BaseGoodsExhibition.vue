@@ -1,14 +1,14 @@
 <template>
-<div class="goods-container">
-  <div class="goods-img">图片</div>
-  <div class="goods-detailed">
-    <div class="top">{{ goodsSouce.foodName }}</div>
-    <div class="bottom">
-      <p>已售{{ goodsSouce.alreadySell }}</p>
-      <p> ￥{{ goodsSouce.price }}</p>
+  <div class="goods-container">
+    <div class="goods-img">图片</div>
+    <div class="goods-detailed">
+      <div class="top">{{ goodsSouce.foodName }}</div>
+      <div class="bottom">
+        <p>已售{{ goodsSouce.alreadySell }}</p>
+        <p>￥{{ goodsSouce.price }}</p>
+      </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -20,8 +20,7 @@ export default {
       type: Object,
       required: true
     }
-  },
-
+  }
 }
 </script>
 
@@ -49,7 +48,7 @@ export default {
     }
 
     .bottom p:last-child {
-      color: #E74E45;
+      color: #e74e45;
     }
   }
 }
